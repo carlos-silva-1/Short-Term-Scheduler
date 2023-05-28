@@ -1,0 +1,115 @@
+Schedules the processes that should be executed by the CPU.
+The design of the program does not need to replicate exactly the real world behaviour;
+That should be done by the images that the end user will see.
+
+The scheduler should be an object that:
+- receives information about existing processes
+- tells the processes to go to different queues to organize them
+- tells the CPU which process it should be executing currently
+Therefore, there's no need for the scheduler to be anything more than a messenger
+
+The processes are created by the OS/User and info about them are sent to the scheduler.
+Could be created by a processFactory class.
+
+The queues could be in any number, depends on the number of periphericals. 
+So as to not change the scheduler code with new queues, separate them. 
+Have a queue manager object that receives the processes and gives info to the scheduler.
+
+CPU looks for the memory position where the process is (which queue head) and executes that process.
+CPU receives info from scheduler, pointing it to the correct process. 
+
+--------------------------------------------------------------------------
+
+3 objects so far: scheduler, cpu, process
+
+Process has field telling IO operations
+
+How should the queues be? 
+A queueManager will have its code modified every time theres a new IO type if it references the queues by type
+
+First: how should a basic queue object look like?
+Fields: size 
+Funcs: push, pop, isempty, isfull, 
+
+Basic queue interface
+Each IO type has its own concrete IO queue
+
+How does the scheduler send a process to its correct queue? 
+Types of queue: high, low, printer, disk, tape
+
+queueManager (shit name?) object
+Responsabilities: keep track of all queues on system, sends processes to correct queue, keeps info on queue heads
+
+The processes on io queues heads should have their time reduced. Whose responsability? queueManager?
+Who reduces the time in the real world? The user. Who should do it on the program?
+QueueManager seems better for it. 
+
+How is time tracked across all objects?
+Real world: system clock
+Code: some object sends signal? Cpu? Scheduler? Main?
+
+Main (name: system) creates scheduler, processFactory, cpu, queueManager
+
+Scheduler gets info from processes on system, tells cpu which one to execute, and system tells queueManager to reduce time on IO processes on queue heads.
+
+Who creates processes? System? No. UserSimulator? Doesn't say what it does in the name. ProcessCreator good enough.
+
+--------------------------------------------
+
+WONT BE ABLE TO PRACTICE FACTORY PATTERN
+
+MAYBE TRY ASYNC, WAIT, AND SUCH ON PROCESSES 
+CREACTION?
+
+class QueueManager
+function insert
+check for ...
+
+
+
+Should a system already have queues for all IO
+types?
+Or can it create on the spot?
+What would be the differences in implementation?
+Would one of them require factory pattern?
+
+Case 1: System creates queues on the spot
+
+--------------------------------------------
+
+ANTES DE DECIDIR QUALQUER OUTRA COISA, VOLTAR AO DESIGN DA APLICAÇÃO
+DECIDIR QUAIS SÃO TODAS AS PRIORIDADES, STATUS,ETC.
+SÓ DPS VOLTAR AO CÓDIGO
+
+--------------------------------------------
+
+Case queues created on the spot
+scheduler checks process' IO type
+checks all queues
+if no queue of the type exists, create new queue
+
+Case queues created beforehand
+class scheduler needs info on all IO types beforehand
+can have this info on another file
+
+--------------------------------------------
+
+WHAT IF OTHER THINGS (aside from IO operations) need to be added
+to the process? 
+Like this is fine for now, its just a simulation
+
+--------------------------------------------
+
+MOVEMENT OF PROCESS AFTER IO OP DONE
+
+something simulates an io operation
+after time of the operation is reached, scheduler transfers process to one of the ready queues (HIGH or LOW)
+
+something needs to check if operation time is reached
+who?
+process has the method that tells if operation is finished
+who calls it?
+scheduler calls it
+where?
+after simulateIO function
+

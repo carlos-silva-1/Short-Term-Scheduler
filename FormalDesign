@@ -1,0 +1,179 @@
+--------------------------------------------
+
+1 - APPLICATION OVERVIEW
+
+Simulates the scheduling of processes in an operating system.
+
+Objects:
+System (Main)
+CPU
+Process
+Scheduler
+Queue
+
+Auxiliary:
+SystemSimulatorConstants - configuration of the system and rules to be followed by the scheduler (Ex: a new process should be scheduled to the high priority queue)
+
+OBS:
+so far no need for any interface
+
+--------------------------------------------
+
+2 - APPLICATION START
+
+System creates other objects
+System creates processes to be scheduled
+
+(do rest while processes exist)
+
+    if there are any new processes to be scheduled, send them to scheduler
+    how to tell if there's a new process?
+    (Process object knows its arrival time)
+
+    if CPU is idle, send process according to what the scheduler says should be sent
+    (CPU knows if its idle)
+    (Scheduler knows best process to be executed next)
+
+    tells CPU to execute its current process
+
+    tells Scheduler to simulate IO operations
+
+    check if CPU has finished executing current process
+    follow the CPUs instructions about what to do with the process (3)
+
+--------------------------------------------
+
+3 - CPU BECOMING IDLE
+
+after executing a process, CPU checks if process is done.
+if it is done executing, FLAG process for termination
+if its time slice has finished, FLAG process to schedule
+
+system pops process from CPU, and only then does it become idle
+
+--------------------------------------------
+
+4 - MOVEMENT OF PROCESS AFTER IO OP DONE
+
+something simulates an io operation
+after time of the operation is reached, scheduler transfers process to one of the ready queues (HIGH or LOW)
+
+something needs to check if operation time is reached
+who?
+process has the method that tells if operation is finished
+who calls it?
+scheduler calls it
+where?
+after simulateIO function
+
+--------------------------------------------
+
+5 - PROCESSES' INITIALIZATION
+
+processes are initialized randomly
+
+--------------------------------------------
+
+6 - SCHEDULER'S INITIALIZATION
+
+Scheduler initializes a queue for each priority of ready processes
+a queue for each IO operation type
+
+--------------------------------------------
+
+7 - CPU INITIALIZATION
+
+CPU initializes idle
+
+--------------------------------------------
+
+8 - CPU API
+
+push, pop, simulateProcessExecution, isIdle
+
+--------------------------------------------
+
+9 - PROCESS API
+
+simulateExecution, hasFinishedExecution, hasFinishedTimeSlice, 
+getArrivalTime, 
+
+--------------------------------------------
+
+10 - SCHEDULER API
+
+getNextProcess, simulateIOOperations, 
+
+--------------------------------------------
+
+11 - SYSTEM FUNCTIONS
+
+terminateProcess, preemptProcess, checkForNewlyArrivedProcesses, 
+
+--------------------------------------------
+
+12 - PROCESS TERMINATION OR PREEMPTION
+
+if a process is to be terminated, how does the system become 
+aware of that?
+do not ask the process, the process only wants to execute: a greedy 
+process could execute forever
+
+System keeps info on the execution time of the current process
+this way, there's better separation of responsibilities (field)
+
+--------------------------------------------
+
+13 - HOW DOES A PROCESS GET SENT TO AN IO QUEUE?
+
+a process with an IO operation to execute is sent to the CPU.
+if it has an IO operation to execute, CPU can't execute it.
+?how is that process sent to the correct IO queue?
+
+the process on the CPU makes a request for access to the IO peripheral
+the system then sends the process from the CPU to the scheduler.
+HOW DOES THE SYSTEM KNOW?
+can check if the CPU is idle
+DOES IT NEED TO KNOW THAT THE PROCESS REQUESTED IO?
+no -> just send it to the scheduler, it will sort things out
+
+--------------------------------------------
+
+14 - WHAT DOES THE CPU DO IF A PROCESS REQUESTS IO OPERATION?
+
+CPU just indicates its idle
+System will pick up from there
+
+--------------------------------------------
+
+15 - WHAT DOES THE SYSTEM DO WHEN A PROCESS BEING EXECUTED REQUESTS IO?
+
+at every new time instance, the system checks if the CPU is idle
+if he confirms it, preempts the process
+
+--------------------------------------------
+
+16 - WHAT DOES THE SCHEDULER DO WHEN IT RECEIVES A PROCESS 
+REQUESTING AN IO OPERATION?
+
+scheduler checks if process is requesting any IO at that time.
+if it is, pushes that process onto the correct queue
+
+--------------------------------------------
+
+17 - WHERE SHOULD THE SCHEDULING RULES BE CODED?
+
+simulator config -> only responsibility is to keep the config of the 
+system, the scheduler's is to read the rules and send the processes 
+to the correct queues
+
+--------------------------------------------
+
+TODO
+
+allow creation of processes with data inputed from user
+
+allow user to select scheduling algorithm
+
+allow user to config system
+
